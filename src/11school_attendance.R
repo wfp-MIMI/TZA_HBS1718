@@ -172,6 +172,7 @@ household_roster <- household_roster |>
     )
   )
 
+
 # ------------------------------------------------------------
 # 8. Recover non-attendance information using S5_2
 # ------------------------------------------------------------
@@ -590,7 +591,7 @@ mn_inadequacy <- svy_analysis_df |>
             folate_inadequacy = survey_mean(folate_mcg_inadequate, na.rm = T, vartype = NULL),
             vitb12_inadequacy = survey_mean(vitb12_mcg_inadequate, na.rm = T, vartype = NULL),
             zn_inadequacy = survey_mean(zn_mg_inadequate, na.rm = T, vartype = NULL),
-            mpi = survey_mean(mpi, na.rm = T, vartype = NULL))
+            mpi = survey_mean(mpi, na.rm = T, vartype = "ci"))
 
 mn_inadequacy <- mn_inadequacy |> 
   mutate(across(-c(school_attendance_status), ~ .x * 100)) |> 
@@ -615,7 +616,14 @@ fe_inadequacy <- fe_full_prob(
 mn_inadequacy <- mn_inadequacy |> 
   left_join(fe_inadequacy, by = c("school_attendance_status")) |> 
   dplyr::select(school_attendance_status, vita_inadequacy, folate_inadequacy, vitb12_inadequacy,
-                zn_inadequacy, fe_inadequacy, mpi)
+                zn_inadequacy, fe_inadequacy, mpi, mpi_low, mpi_upp)
+
+# Put confidence intervals in brackets: 
+mn_inadequacy <- mn_inadequacy |>
+  mutate(
+    mpi = paste0(mpi, " (", mpi_low, ", ", mpi_upp, ")")
+  ) |>
+  dplyr::select(-c(mpi_low, mpi_upp))
 
 # GT table: 
 mn_inadequacy_table <- mn_inadequacy |> 
@@ -627,7 +635,7 @@ mn_inadequacy_table <- mn_inadequacy |>
     vitb12_inadequacy = "Vitamin B12",
     zn_inadequacy = "Zinc",
     fe_inadequacy = "Iron",
-    mpi = "MPI"
+    mpi = "MPI (95% CI)"
   ) |>
   tab_spanner(
     label = "Risk of inadequate intake, by school attendance status (% of households)",
@@ -638,13 +646,28 @@ mn_inadequacy_table <- mn_inadequacy |>
       cell_text(weight = "bold")
     ),
     locations = cells_column_labels(everything())
+  ) |> 
+  # Make column widths equal for vitamin A:MPI columns:
+  cols_width(
+    school_attendance_status ~ px(120),
+    vita_inadequacy ~ px(80),
+    folate_inadequacy ~ px(80),
+    vitb12_inadequacy ~ px(80),
+    zn_inadequacy ~ px(80),
+    fe_inadequacy ~ px(80),
+    mpi ~ px(120)
+  ) |>  
+  # centre align all columns:
+  cols_align(
+    align = "center",
+    columns = everything()
   )
 
 mn_inadequacy_table
 
 gtsave(
   data = mn_inadequacy_table,
-  filename = "figures/school_meals/mn_inadequacy_by_school_attendance.png"
+  filename = "figures/school_meals/mn_inadequacy_by_school_attendance.png",
 )
 
 # Testing
