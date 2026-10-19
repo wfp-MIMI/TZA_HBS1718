@@ -10,13 +10,12 @@ pacman::p_load(tidyverse, sf, survey, srvyr, biscale, cowplot)
 options(survey.lonely.psu = "adjust")   # avoid errors from single-PSU strata
 
 # ---- 1. Paths ----------------------------------------------------------------
+gis_path     <- "shapefiles/tza_admbnda_adm1_20181019.shp"
+out_dir      <- "figures/others"
+hh_info_path <- "processed_data/tza_hbs1718_hh_information.csv"
+cons_path    <- "processed_data/tza_hbs1718_food_consumption.csv"
 
-gis_path <- "C:/Users/uchenna.agu/Downloads/OneDrive_2026-03-24/MIMI GIS files/tza_admbnda_adm1_20181019.shp"
-out_dir  <- "."
-hbs_dir      <- "C:/Users/uchenna.agu/OneDrive - World Food Programme/MIMI Project - HBS17-18/processed_data"
-hh_info_path <- file.path(hbs_dir, "tza_hbs1718_hh_information.csv")
-cons_path    <- file.path(hbs_dir, "tza_hbs1718_food_consumption.csv")
-
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 # ---- 2. Vehicle configuration -----------------------------------------------
 # `codes` = named vector: item_code -> conversion factor to vehicle equivalent
 # (1 = item is the vehicle itself)
@@ -156,7 +155,10 @@ tza_adm1 <- st_read(gis_path, quiet = TRUE) %>%
   filter(!str_detect(adm1, "Unguja|Pemba|Mjini")) %>%
   mutate(adm1 = recode(adm1, "Dar-es-salaam" = "Dar Es Salaam"))
 
-tza_food_cons <- read_survey(hh_info_path, cons_path)
+tza_food_cons <- read_survey(
+  hh_info_path = hh_info_path,
+  cons_path    = cons_path
+)
 
 results <- imap(vehicles, function(cfg, name) {
 
@@ -164,9 +166,9 @@ results <- imap(vehicles, function(cfg, name) {
   plots <- make_bivariate_map(est, tza_adm1, cfg, name)
 
   ggsave(file.path(out_dir, paste0("tza ", name, " no legend.png")),
-         plots$map, width = 10, height = 5, dpi = 300, bg = "white")
+         plots$map, width = 10, height = 5, dpi = 300, bg = "transparent")
   ggsave(file.path(out_dir, paste0("tza ", name, " bivariate.png")),
-         plots$map_legend, width = 10, height = 5, dpi = 300, bg = "white")
+         plots$map_legend, width = 10, height = 5, dpi = 300, bg = "transparent")
 
   c(list(estimates = est), plots)
 })
