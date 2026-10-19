@@ -1,6 +1,9 @@
 # ============================================================
 # TANZANIA – OBJECTIVE 4
-# School-meal micronutrient content vs Allen et al. (2020) H-AR
+# ==============================================================================
+# Authors: Uchenna Agu & Mo Osman
+# Date: September 2026
+# School-meal micronutrient content 
 #
 # Scenarios
 #   Unfortified             : baseline meal (FCT values only)
