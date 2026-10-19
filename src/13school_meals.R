@@ -442,12 +442,12 @@ unfortified_plot
 comparison_plot
 
 
-ggsave(filename = "figures/maps/unfortified_plot_small.png",
+ggsave(filename = "figures/others/unfortified_plot_small.png",
        unfortified_plot,
        width = 8, height = 5, units = "in", dpi = 300,
        bg = "white")
 
-ggsave(filename = "figures/maps/fortified_biofortified_plot.png",
+ggsave(filename = "figures/others/fortified_biofortified_plot.png",
        comparison_plot,
        width = 12, height = 6, units = "in", dpi = 300,
        bg = "white")
