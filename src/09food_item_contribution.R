@@ -237,11 +237,11 @@ process_df <- function(df) {
   
   top20 <- df %>%
     select(item_name, contribution_pct) %>%
-    slice_head(n = 10)
+    slice_head(n = 9)
   
   others <- df %>%
     select(item_name, contribution_pct) %>%
-    slice(-(1:10)) %>%
+    slice(-(1:9)) %>%
     summarise(
       item_name = "Others",
       contribution_pct = sum(contribution_pct, na.rm = TRUE)
