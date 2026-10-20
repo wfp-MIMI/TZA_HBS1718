@@ -164,7 +164,7 @@ oil_mn_degradation <- list(
 
 # Compliance scenarios modelled - matches tza_maize_scenario.R /
 # tza_wheat_scenario.R / tza_oil_scenario.R
-compliance_scenarios <- c(0.00, 0.50, 0.85, 0.90, 1.00)
+compliance_scenarios <- c(0.00, 0.65, 0.85, 1.00)
 
 # Create fortification-adjusted nutrient intake dataset, stacked across every
 # compliance scenario (long format, with "compliance" and "compliance_label"
