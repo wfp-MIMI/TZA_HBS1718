@@ -389,6 +389,15 @@ micronutrients <- c(
   "zn_inadequacy"
 )
 
+# Labels for plot titles
+micronutrient_labels <- c(
+  vita_inadequacy   = "Vitamin A",
+  folate_inadequacy = "Folate",
+  vitb12_inadequacy = "Vitamin B12",
+  fe_inadequacy     = "Iron",
+  zn_inadequacy     = "Zinc"
+)
+
 # Compliance scenarios to map
 map_compliance <- c("65%", "85%", "100%")
 
@@ -404,10 +413,17 @@ for (comp in map_compliance) {
   # Generate a map for each micronutrient
   for (i in micronutrients) {
     
+    map_title <- paste0(
+      micronutrient_labels[i],
+      " - ",
+      comp,
+      " compliance"
+    )
+
     p <- plot_map(
       data = mn_inadequacy_sc,
       col = i,
-      title = "",
+      title = map_title,
       metric = "Risk of inadequate intake (%)",
       outline_sf = tanzania_1
     ) +
@@ -429,6 +445,8 @@ for (comp in map_compliance) {
   }
 }
 
+# Save national inadequacy tables: 
+write_csv(mn_inadequacy_national, "figures/fortification_maps/mn_inadequacy_national.csv")
 
 ################################################################################
 ################################# END OF SCRIPT ################################
