@@ -164,7 +164,7 @@ oil_mn_degradation <- list(
 
 # Compliance scenarios modelled - matches tza_maize_scenario.R /
 # tza_wheat_scenario.R / tza_oil_scenario.R
-compliance_scenarios <- c(0.00, 0.50, 0.85, 0.90, 1.00)
+compliance_scenarios <- c(0.00, 0.65, 0.85, 1.00)
 
 # Create fortification-adjusted nutrient intake dataset, stacked across every
 # compliance scenario (long format, with "compliance" and "compliance_label"
@@ -377,11 +377,8 @@ mn_inadequacy_adm1 <- mn_inadequacy_adm1 |>
 
 
 # ==============================================================================
-# PRODUCE CHOROPLETH MAPS - 100% COMPLIANCE SCENARIO ONLY
+# PRODUCE CHOROPLETH MAPS - 65%, 85%, AND 100% COMPLIANCE SCENARIOS
 # ==============================================================================
-
-# Every other compliance scenario is retained above as a table; only the
-# 100% compliance scenario is mapped
 
 # Indicators to map
 micronutrients <- c(
@@ -392,38 +389,46 @@ micronutrients <- c(
   "zn_inadequacy"
 )
 
-mn_inadequacy_sc <- mn_inadequacy_adm1 |>
-  filter(compliance_label == "100%") |>
-  left_join(tanzania_1, by = "adm1") |>
-  st_as_sf()
+# Compliance scenarios to map
+map_compliance <- c("65%", "85%", "100%")
 
-# Generate and save ADM1-level maps for the 100% compliance scenario
-for (i in micronutrients) {
+# Generate and save ADM1-level maps for each compliance scenario
+for (comp in map_compliance) {
   
-  p <- plot_map(
-    data = mn_inadequacy_sc,
-    col = i,
-    title = "",
-    metric = "Risk of inadequate intake (%)",
-    outline_sf = tanzania_1
-  ) +
-    theme(legend.position = "none")
+  # Prepare spatial dataset for the selected compliance scenario
+  mn_inadequacy_sc <- mn_inadequacy_adm1 |>
+    filter(compliance_label == comp) |>
+    left_join(tanzania_1, by = "adm1") |>
+    st_as_sf()
   
-  print(p)
-  
-  ggsave(
-    filename = paste0(
-      "figures/fortification_maps/", i, "_100pct_map.png"
-    ),
-    plot = p,
-    width = 8,
-    height = 6,
-    dpi = 300
-  )
+  # Generate a map for each micronutrient
+  for (i in micronutrients) {
+    
+    p <- plot_map(
+      data = mn_inadequacy_sc,
+      col = i,
+      title = "",
+      metric = "Risk of inadequate intake (%)",
+      outline_sf = tanzania_1
+    ) +
+      theme(legend.position = "none")
+    
+    print(p)
+    comp_file <- gsub("%", "pct", comp)
+    
+    ggsave(
+      filename = paste0(
+        "figures/fortification_maps/",
+        i, "_", comp_file, "_map.png"
+      ),
+      plot = p,
+      width = 8,
+      height = 6,
+      dpi = 300
+    )
+  }
 }
-
 
 
 ################################################################################
 ################################# END OF SCRIPT ################################
-
