@@ -292,12 +292,15 @@ mpi_map <- st_as_sf(mpi_map)
 # Choropleth Map of Regional Micronutrient Inadequacy
 #===============================================================================
 
-tza_mpi_map <- ggplot() +
-  geom_sf(
-    data = mpi_map,
-    aes(fill = mean_mpi),
-    color = NA
-  ) +
+tza_mpi_map <- plot_map(
+  data = mpi_map,
+  col = "mean_mpi",
+  title = paste0("Mean Probability of Inadequacy (", round(national_mpi$mean_mpi, 2), ")"),
+  metric = "Mean MPI",
+  outline_sf = tanzania_1, 
+  limits = c(0, 1)
+) + 
+  # Add legend
   scale_fill_gradientn(
     colors = wes_palette(
       "Zissou1",
@@ -307,21 +310,39 @@ tza_mpi_map <- ggplot() +
     limits = c(0, 1),
     name = "Prob. Inadequacy"
   ) +
-  theme_minimal() +
   theme(
-    plot.title       = element_text(hjust = 0.5),
-    plot.caption     = element_text(hjust = 0.5),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title       = element_blank(),
-    axis.text        = element_blank(),
-    axis.ticks       = element_blank(),
-    legend.position  = "bottom",
-    legend.direction = "horizontal",
-    legend.title     = element_text(hjust = 0.5),
-    legend.key.width = unit(1.35, "cm"),
-    legend.key.height = unit(0.5, "cm")
-  )
+    legend.position  = "bottom")
+  
+  # ggplot() +
+  # geom_sf(
+  #   data = mpi_map,
+  #   aes(fill = mean_mpi),
+  #   color = NA
+  # ) +
+  # scale_fill_gradientn(
+  #   colors = wes_palette(
+  #     "Zissou1",
+  #     n = 100,
+  #     type = "continuous"
+  #   ),
+  #   limits = c(0, 1),
+  #   name = "Prob. Inadequacy"
+  # ) +
+  # theme_minimal() +
+  # theme(
+  #   plot.title       = element_text(hjust = 0.5),
+  #   plot.caption     = element_text(hjust = 0.5),
+  #   panel.grid.major = element_blank(),
+  #   panel.grid.minor = element_blank(),
+  #   axis.title       = element_blank(),
+  #   axis.text        = element_blank(),
+  #   axis.ticks       = element_blank(),
+  #   legend.position  = "bottom",
+  #   legend.direction = "horizontal",
+  #   legend.title     = element_text(hjust = 0.5),
+  #   legend.key.width = unit(1.35, "cm"),
+  #   legend.key.height = unit(0.5, "cm")
+  # )
 
 tza_mpi_map
 

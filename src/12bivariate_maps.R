@@ -145,7 +145,12 @@ make_bivariate_map <- function(est, shp, cfg, name) {
     draw_plot(bi_map, 0, 0, 1, 1) +
     draw_plot(legend, 0.65, 0.2, 0.45, 0.2)
 
-  list(data = dat, map = bi_map, map_legend = full)
+  list(
+    data = dat,
+    map = bi_map,
+    legend = legend,
+    map_legend = full
+  )
 }
 
 # ---- 4. Run ------------------------------------------------------------------
@@ -169,6 +174,12 @@ results <- imap(vehicles, function(cfg, name) {
          plots$map, width = 10, height = 5, dpi = 300, bg = "transparent")
   ggsave(file.path(out_dir, paste0("tza ", name, " bivariate.png")),
          plots$map_legend, width = 10, height = 5, dpi = 300, bg = "transparent")
+  ggsave(
+    file.path(out_dir, paste0("tza ", name, " legend.png")),
+    plots$legend,
+    width = 4, height = 4,
+    dpi = 300, bg = "transparent"
+  )
 
   c(list(estimates = est), plots)
 })
@@ -177,3 +188,4 @@ results <- imap(vehicles, function(cfg, name) {
 # results$wheat$estimates
 # results$oil$map_legend
 # bind_rows(map(results, "estimates"), .id = "vehicle")
+

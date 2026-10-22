@@ -9,7 +9,7 @@
 # INSTALL AND LOAD PACKAGES:
 
 rq_packages <- c("readr", "tidyverse", "ggplot2", "spdep", "sf", "wesanderson",
-                 "srvyr", "plotly")
+                 "srvyr", "plotly", "cowplot")
 
 installed_packages <- rq_packages %in% rownames(installed.packages())
 if (any(installed_packages == FALSE)) {
@@ -115,6 +115,14 @@ tza_fe_inadequacy_adm1 <- fe_full_prob(
 mn_inadequacy <- mn_inadequacy |>
   left_join(tza_fe_inadequacy_adm1, by=c("adm1"="subpopulation"))
 
+# Merge national iron inadequacy with other micronutrients:
+national_mn_inadequacy <- national_mn_inadequacy |>
+  cbind(
+    round(national_fe_inadequacy |>
+      dplyr::select(prev_inad) |> 
+      rename(fe_inadequacy = prev_inad), digits = 0)
+  ) 
+
 #-------------------------------------------------------------------------------
 
 # MEAN ADEQUACY RATIO (MAR):
@@ -159,6 +167,8 @@ mar_inadequacy <- mar_inadequacy |>
 micronutrients <- c("vita_inadequacy", "folate_inadequacy",
                     "vitb12_inadequacy", "fe_inadequacy", "zn_inadequacy")
 
+figure_title <- c("Vitamin A", "Folate", "Vitamin B12", "Iron", "Zinc")
+
 mn_inadequacy <- st_as_sf(mn_inadequacy)
 
 for (i in micronutrients) {
@@ -166,10 +176,10 @@ for (i in micronutrients) {
   p <- plot_map(
     data = mn_inadequacy,
     col = i,
-    title = "",
+    title = paste0(figure_title[which(micronutrients == i)], " (", national_mn_inadequacy[[i]], "%)"),
     metric = "Risk of inadequate intake (%)",
     outline_sf = tanzania_1
-  )
+  ) 
 
   print(p)
 
@@ -182,6 +192,19 @@ for (i in micronutrients) {
   )
   
 }
+
+# Get a standalone legend: 
+legend <- get_legend(
+  p + theme(legend.position = "bottom")
+)
+
+ggsave(
+  filename = "figures/maps/legend_map.png",
+  plot = legend,
+  width = 8,
+  height = 2,
+  dpi = 300
+)
 
 # MAP MAR INADEQUACY:
 # mar_inadequacy <- st_as_sf(mar_inadequacy)
